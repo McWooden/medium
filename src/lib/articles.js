@@ -15,7 +15,15 @@ const articlesDirectory = path.join(process.cwd(), 'content/articles');
  */
 function processMetadata(data, content, slug, fullPath) {
     const result = { ...data };
-    const stats = fullPath ? fs.statSync(fullPath) : null;
+    let stats = null;
+
+    try {
+        if (fullPath && fs.existsSync(fullPath)) {
+            stats = fs.statSync(fullPath);
+        }
+    } catch (e) {
+        console.error(`Error reading stats for ${fullPath}:`, e);
+    }
 
     // Split content into non-empty lines and paragraphs
     const lines = content.split('\n').filter(line => line.trim().length > 0);
@@ -23,13 +31,14 @@ function processMetadata(data, content, slug, fullPath) {
 
     // 1. Title: Front-matter or first line of body
     if (!result.title) {
-        const firstLine = lines[0];
-        result.title = firstLine ? firstLine.replace(/^[#\s]+/, '').slice(0, 100).trim() : slug;
+        const firstLine = lines[0] || '';
+        result.title = firstLine.replace(/^[#\s]+/, '').trim().slice(0, 100) || slug;
     }
 
     // 2. Timestamps: Front-matter or file system stats
     if (!result.created_at) {
-        result.created_at = result.date || (stats ? stats.birthtime.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+        const fallbackDate = new Date().toISOString().split('T')[0];
+        result.created_at = result.date || (stats ? stats.birthtime.toISOString().split('T')[0] : fallbackDate);
     }
 
     if (!result.updated_at) {
@@ -43,7 +52,7 @@ function processMetadata(data, content, slug, fullPath) {
     if (!result.excerpt) {
         // If the first paragraph is the title, take the second one
         let excerptSource = paragraphs[0];
-        if (excerptSource && excerptSource.trim() === lines[0]?.trim() && paragraphs.length > 1) {
+        if (excerptSource && excerptSource.trim() === (lines[0] || '').trim() && paragraphs.length > 1) {
             excerptSource = paragraphs[1];
         }
 

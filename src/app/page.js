@@ -16,14 +16,18 @@ export default function Home() {
                     <article key={article.slug} className="group">
                         <Link href={`/articles/${article.slug}`}>
                             <div className="flex flex-col md:flex-row gap-8">
-                                <div className="md:w-1/3">
-                                    <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                                        <div className="w-full h-full flex items-center justify-center text-gray-400 font-medium">
-                                            Cover Image
+                                {article.cover && (
+                                    <div className="md:w-1/3">
+                                        <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                                            <img
+                                                src={article.cover}
+                                                alt={article.title}
+                                                className="w-full h-full object-cover"
+                                            />
                                         </div>
                                     </div>
-                                </div>
-                                <div className="md:w-2/3">
+                                )}
+                                <div className={article.cover ? "md:w-2/3" : "w-full"}>
                                     <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
                                         <span>{article.author}</span>
                                         <span>•</span>

@@ -14,9 +14,4 @@ collections:
     identifier_field: "body"
     summary: "{{body}}"
     fields:
-      - { label: "Title", name: "title", widget: "hidden", required: false }
-      - { label: "Publish Date", name: "date", widget: "hidden", required: false }
-      - { label: "Author", name: "author", widget: "hidden", required: false }
-      - { label: "Cover Image", name: "cover", widget: "hidden", required: false }
-      - { label: "Excerpt", name: "excerpt", widget: "hidden", required: false }
       - { label: "Body", name: "body", widget: "markdown" }
