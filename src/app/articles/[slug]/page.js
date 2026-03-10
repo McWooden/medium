@@ -32,12 +32,21 @@ export default async function ArticlePage({ params }) {
                     dangerouslySetInnerHTML={{ __html: article.contentHtml || '' }}
                 />
 
-                <div className="mt-12 pt-8 border-t flex items-center gap-3 text-sm text-gray-500">
+                <div className="mt-12 pt-8 border-t flex flex-wrap items-center gap-3 text-sm text-gray-500">
                     <span className="font-medium text-black">{article.author}</span>
                     <span>•</span>
                     <time>{article.created_at}</time>
                     {article.updated_at && article.updated_at !== article.created_at && (
                         <span className="italic">(Updated {article.updated_at})</span>
+                    )}
+                    {article.categories && article.categories.length > 0 && (
+                        <div className="flex gap-2 ml-auto">
+                            {article.categories.map(cat => (
+                                <span key={cat} className="bg-gray-100 px-3 py-1 rounded-full text-xs text-gray-600 font-medium">
+                                    {cat}
+                                </span>
+                            ))}
+                        </div>
                     )}
                 </div>
             </article>

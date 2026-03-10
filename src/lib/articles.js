@@ -72,6 +72,11 @@ function processMetadata(data, content, slug, fullPath) {
         result.author = "Admin";
     }
 
+    // 6. Categories: Fallback
+    if (!result.categories) {
+        result.categories = [];
+    }
+
     return result;
 }
 

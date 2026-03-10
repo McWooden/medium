@@ -14,4 +14,5 @@ collections:
     identifier_field: "body"
     summary: "{{body}}"
     fields:
+      - { label: "Categories", name: "categories", widget: "list", required: false, hint: "Enter categories or tags for this article." }
       - { label: "Body", name: "body", widget: "markdown" }

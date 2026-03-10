@@ -10,6 +10,24 @@
 
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    CMS.registerPreviewTemplate("articles", createClass({
+      render: function () {
+        const entry = this.props.entry;
+        const title = entry.getIn(['data', 'title']);
+        const body = this.props.widgetFor('body');
+        const categories = entry.getIn(['data', 'categories']);
+
+        return h('div', { style: { padding: '20px', fontFamily: 'sans-serif' } },
+          h('div', { style: { color: '#666', marginBottom: '10px', fontSize: '14px' } },
+            categories ? categories.toJS().join(', ') : ''
+          ),
+          h('h1', { style: { fontSize: '2.5rem', margin: '0 0 20px 0' } }, title || 'Article Preview'),
+          h('div', { className: 'prose' }, body)
+        );
+      }
+    }));
+  </script>
 </body>
 
 </html>

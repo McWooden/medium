@@ -32,6 +32,18 @@ export default function Home() {
                                         <span>{article.author}</span>
                                         <span>•</span>
                                         <span>{article.date}</span>
+                                        {article.categories && article.categories.length > 0 && (
+                                            <>
+                                                <span>•</span>
+                                                <div className="flex gap-2">
+                                                    {article.categories.map(cat => (
+                                                        <span key={cat} className="bg-gray-100 px-2 py-0.5 rounded-full text-xs text-gray-600">
+                                                            {cat}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                     <h2 className="text-2xl font-bold mb-3 group-hover:text-blue-600 transition-colors">
                                         {article.title}
