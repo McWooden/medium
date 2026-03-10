@@ -10,7 +10,9 @@ collections:
     label: "Articles"
     folder: "content/articles"
     create: true
-    slug: "{{slug}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}{{second}}"
+    identifier_field: "body"
+    summary: "{{body}}"
     fields:
       - { label: "Title", name: "title", widget: "hidden", required: false }
       - { label: "Publish Date", name: "date", widget: "hidden", required: false }
