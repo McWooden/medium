@@ -13,8 +13,9 @@ const articlesDirectory = path.join(process.cwd(), 'content/articles');
 /**
  * Helper to extract metadata from body if missing
  */
-function processMetadata(data, content, slug) {
+function processMetadata(data, content, slug, fullPath) {
     const result = { ...data };
+    const stats = fullPath ? fs.statSync(fullPath) : null;
 
     // Split content into non-empty lines and paragraphs
     const lines = content.split('\n').filter(line => line.trim().length > 0);
@@ -23,13 +24,20 @@ function processMetadata(data, content, slug) {
     // 1. Title: Front-matter or first line of body
     if (!result.title) {
         const firstLine = lines[0];
-        result.title = firstLine ? firstLine.replace(/^[#\s]+/, '').slice(0, 100) : slug;
+        result.title = firstLine ? firstLine.replace(/^[#\s]+/, '').slice(0, 100).trim() : slug;
     }
 
-    // 2. Date: Front-matter or today
-    if (!result.date) {
-        result.date = new Date().toISOString().split('T')[0];
+    // 2. Timestamps: Front-matter or file system stats
+    if (!result.created_at) {
+        result.created_at = result.date || (stats ? stats.birthtime.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
     }
+
+    if (!result.updated_at) {
+        result.updated_at = stats ? stats.mtime.toISOString().split('T')[0] : result.created_at;
+    }
+
+    // Alias date to created_at for backward compatibility
+    result.date = result.created_at;
 
     // 3. Excerpt: Front-matter or first paragraph (skipping the title if it was the first paragraph)
     if (!result.excerpt) {
@@ -72,7 +80,7 @@ export function getAllArticles() {
 
         return {
             slug,
-            ...processMetadata(data, content, slug),
+            ...processMetadata(data, content, slug, fullPath),
         };
     });
 
@@ -103,6 +111,6 @@ export async function getArticleData(slug) {
     return {
         slug,
         contentHtml,
-        ...processMetadata(data, content, slug),
+        ...processMetadata(data, content, slug, fullPath),
     };
 }

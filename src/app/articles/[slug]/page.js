@@ -31,7 +31,10 @@ export default async function ArticlePage({ params }) {
                     <div className="flex items-center gap-3 text-gray-500 mb-4">
                         <span className="font-medium text-black">{article.author}</span>
                         <span>•</span>
-                        <time>{article.date}</time>
+                        <time>{article.created_at}</time>
+                        {article.updated_at && article.updated_at !== article.created_at && (
+                            <span className="text-sm italic">(Updated {article.updated_at})</span>
+                        )}
                     </div>
                     <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
                         {article.title}
@@ -41,9 +44,19 @@ export default async function ArticlePage({ params }) {
                     </p>
                 </header>
 
-                <div className="aspect-video bg-gray-100 rounded-xl mb-12 flex items-center justify-center text-gray-400 font-medium border border-gray-200">
-                    Hero Image Placeholder
-                </div>
+                {article.cover ? (
+                    <div className="mb-12 rounded-xl overflow-hidden border border-gray-200">
+                        <img
+                            src={article.cover}
+                            alt={article.title}
+                            className="w-full h-auto object-cover max-h-[500px]"
+                        />
+                    </div>
+                ) : (
+                    <div className="aspect-video bg-gray-100 rounded-xl mb-12 flex items-center justify-center text-gray-400 font-medium border border-gray-200">
+                        Hero Image Placeholder
+                    </div>
+                )}
 
                 <div
                     className="prose prose-lg max-w-none prose-headings:font-bold prose-a:text-blue-600"
