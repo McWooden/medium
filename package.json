@@ -28,6 +28,7 @@
     "typescript": "^5"
   },
   "overrides": {
-    "@typescript-eslint/typescript-estree": "8.54.0"
+    "@typescript-eslint/typescript-estree": "8.54.0",
+    "@types/node": "20"
   }
 }
