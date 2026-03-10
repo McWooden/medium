@@ -10,17 +10,69 @@ const articlesDirectory = path.join(process.cwd(), 'content/articles');
  * Get all articles with front-matter.
  * @returns {Array}
  */
+/**
+ * Helper to extract metadata from body if missing
+ */
+function processMetadata(data, content, slug) {
+    const result = { ...data };
+
+    // Split content into non-empty lines and paragraphs
+    const lines = content.split('\n').filter(line => line.trim().length > 0);
+    const paragraphs = content.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+
+    // 1. Title: Front-matter or first line of body
+    if (!result.title) {
+        const firstLine = lines[0];
+        result.title = firstLine ? firstLine.replace(/^[#\s]+/, '').slice(0, 100) : slug;
+    }
+
+    // 2. Date: Front-matter or today
+    if (!result.date) {
+        result.date = new Date().toISOString().split('T')[0];
+    }
+
+    // 3. Excerpt: Front-matter or first paragraph (skipping the title if it was the first paragraph)
+    if (!result.excerpt) {
+        // If the first paragraph is the title, take the second one
+        let excerptSource = paragraphs[0];
+        if (excerptSource && excerptSource.trim() === lines[0]?.trim() && paragraphs.length > 1) {
+            excerptSource = paragraphs[1];
+        }
+
+        result.excerpt = excerptSource
+            ? excerptSource.replace(/[#*`]/g, '').trim().slice(0, 160) + '...'
+            : '';
+    }
+
+    // 4. Cover: Front-matter or first image in body
+    if (!result.cover) {
+        const imageMatch = content.match(/!\[.*?\]\((.*?)\)/);
+        result.cover = imageMatch ? imageMatch[1] : null;
+    }
+
+    // 5. Author: Fallback
+    if (!result.author) {
+        result.author = "Admin";
+    }
+
+    return result;
+}
+
+/**
+ * Get all articles with front-matter.
+ * @returns {Array}
+ */
 export function getAllArticles() {
     const fileNames = fs.readdirSync(articlesDirectory);
     const allArticlesData = fileNames.map((fileName) => {
         const slug = fileName.replace(/\.md$/, '');
         const fullPath = path.join(articlesDirectory, fileName);
         const fileContents = fs.readFileSync(fullPath, 'utf8');
-        const matterResult = matter(fileContents);
+        const { data, content } = matter(fileContents);
 
         return {
             slug,
-            ...matterResult.data,
+            ...processMetadata(data, content, slug),
         };
     });
 
@@ -41,16 +93,16 @@ export function getAllArticles() {
 export async function getArticleData(slug) {
     const fullPath = path.join(articlesDirectory, `${slug}.md`);
     const fileContents = fs.readFileSync(fullPath, 'utf8');
-    const matterResult = matter(fileContents);
+    const { data, content } = matter(fileContents);
 
     const processedContent = await remark()
         .use(html)
-        .process(matterResult.content);
+        .process(content);
     const contentHtml = processedContent.toString();
 
     return {
         slug,
         contentHtml,
-        ...matterResult.data,
+        ...processMetadata(data, content, slug),
     };
 }

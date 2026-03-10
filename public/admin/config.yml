@@ -12,9 +12,9 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Publish Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
-      - { label: "Author", name: "author", widget: "string" }
-      - { label: "Cover Image", name: "cover", widget: "image" }
-      - { label: "Excerpt", name: "excerpt", widget: "text" }
+      - { label: "Title", name: "title", widget: "string", required: false, hint: "Optional. Will be extracted from the first line of the body if left blank." }
+      - { label: "Publish Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, required: false, hint: "Optional. defaults to today." }
+      - { label: "Author", name: "author", widget: "string", required: false, hint: "Optional. Defaults to the logged-in user." }
+      - { label: "Cover Image", name: "cover", widget: "image", required: false, hint: "Optional. Will use the first image in the body if left blank." }
+      - { label: "Excerpt", name: "excerpt", widget: "text", required: false, hint: "Optional. Summarized from the first paragraph if left blank." }
       - { label: "Body", name: "body", widget: "markdown" }
