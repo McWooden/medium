@@ -1,12 +1,6 @@
 import { getArticleData, getAllArticles } from '@/lib/articles';
 import Link from 'next/link';
 
-interface ArticlePageProps {
-    params: Promise<{
-        slug: string;
-    }>;
-}
-
 export async function generateStaticParams() {
     const articles = getAllArticles();
     return articles.map((article) => ({
@@ -14,7 +8,7 @@ export async function generateStaticParams() {
     }));
 }
 
-export default async function ArticlePage({ params }: ArticlePageProps) {
+export default async function ArticlePage({ params }) {
     const { slug } = await params;
     const article = await getArticleData(slug);
 
