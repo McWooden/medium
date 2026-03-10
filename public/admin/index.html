@@ -11,6 +11,21 @@
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
+    // Register basic Tailwind-like typography styles to the preview iframe
+    CMS.registerPreviewStyle(`
+      .prose { font-family: ui-sans-serif, system-ui, sans-serif; line-height: 1.75; color: #374151; max-width: 65ch; }
+      .prose p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .prose h1 { font-size: 2.25em; margin-top: 0; margin-bottom: 0.8888889em; line-height: 1.1111111; font-weight: 800; color: #111827; }
+      .prose h2 { font-size: 1.5em; margin-top: 2em; margin-bottom: 1em; line-height: 1.3333333; font-weight: 700; color: #111827; }
+      .prose h3 { font-size: 1.25em; margin-top: 1.6em; margin-bottom: 0.6em; line-height: 1.6; font-weight: 600; color: #111827; }
+      .prose ul { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; list-style-type: disc; }
+      .prose li { margin-top: 0.5em; margin-bottom: 0.5em; }
+      .prose a { color: #111827; text-decoration: underline; font-weight: 500; }
+      .prose strong { color: #111827; font-weight: 600; }
+      .prose blockquote { font-weight: 500; font-style: italic; color: #111827; border-left-width: 0.25rem; border-left-color: #e5e7eb; quotes: "\\201C""\\201D""\\2018""\\2019"; margin-top: 1.6em; margin-bottom: 1.6em; padding-left: 1em; }
+      .prose code { color: #111827; font-weight: 600; font-size: 0.875em; }
+    `, { raw: true });
+
     CMS.registerPreviewTemplate("articles", createClass({
       render: function () {
         const entry = this.props.entry;
@@ -18,12 +33,24 @@
         const body = this.props.widgetFor('body');
         const categories = entry.getIn(['data', 'categories']);
 
+        // The CMS preview renders inside an isolated <iframe>.
+        // It does NOT inherit Tailwind CSS or global styles from your Next.js app automatically.
+        // This is why your inline `style: { ... }` worked, but `className: 'prose'` did not.
         return h('div', { style: { padding: '20px', fontFamily: 'sans-serif' } },
           h('div', { style: { color: '#666', marginBottom: '10px', fontSize: '14px' } },
             categories ? categories.toJS().join(', ') : ''
           ),
           h('h1', { style: { fontSize: '2.5rem', margin: '0 0 20px 0' } }, title || 'Article Preview'),
-          h('div', { className: 'prose' }, body)
+
+          // Wrapping the body in a div with inline styles to mimic basic `.prose` formatting since Tailwind isn't loaded in the iframe
+          h('div', {
+            className: 'prose', // kept for potential external stylesheets
+            style: {
+              lineHeight: '1.75',
+              color: '#374151',
+              fontSize: '1.125rem'
+            }
+          }, body)
         );
       }
     }));
