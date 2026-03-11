@@ -24,6 +24,10 @@
         // Parse the markdown string into HTML using marked.js
         var htmlBody = window.marked ? window.marked.parse(rawBody) : rawBody;
 
+        // Add responsive CSS for markdown elements (images, iframes, etc.)
+        var responsiveCss = '<style>img, iframe { max-width: 100%; height: auto; border-radius: 8px; margin: 1.5rem 0; clear: both; display: block; } pre { max-width: 100%; overflow-x: auto; }</style>';
+        htmlBody = responsiveCss + htmlBody;
+
         return h('div', { style: { padding: '20px', fontFamily: 'ui-sans-serif, system-ui, sans-serif', maxWidth: '740px', margin: '0 auto' } },
           h('div', { style: { color: '#6b7280', marginBottom: '8px', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.05em' } },
             categories ? categories.toJS().join(' · ') : ''
