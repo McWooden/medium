@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Manager</title>
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <!-- add marked.js to manually parse raw markdown into html -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body>
@@ -14,8 +16,13 @@
     CMS.registerPreviewTemplate("articles", createClass({
       render: function () {
         var entry = this.props.entry;
-        var body = this.props.widgetFor('body');
         var categories = entry.getIn(['data', 'categories']);
+
+        // Fetch raw markdown string instead of using the broken widgetFor
+        var rawBody = entry.getIn(['data', 'body']) || '';
+
+        // Parse the markdown string into HTML using marked.js
+        var htmlBody = window.marked ? window.marked.parse(rawBody) : rawBody;
 
         return h('div', { style: { padding: '20px', fontFamily: 'ui-sans-serif, system-ui, sans-serif', maxWidth: '740px', margin: '0 auto' } },
           h('div', { style: { color: '#6b7280', marginBottom: '8px', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.05em' } },
@@ -26,10 +33,10 @@
               lineHeight: '1.75',
               color: '#374151',
               fontSize: '1.125rem'
-            }
-          },
-            body || h('p', { style: { color: '#9ca3af', fontStyle: 'italic' } }, 'Start writing to see the preview...')
-          )
+            },
+            // Safely inject the parsed HTML into the div
+            dangerouslySetInnerHTML: { __html: htmlBody || '<p style="color:#9ca3af;font-style:italic;">Start writing to see the preview...</p>' }
+          })
         );
       }
     }));
